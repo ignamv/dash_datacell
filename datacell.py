@@ -5,6 +5,9 @@ from werkzeug.contrib.cache import SimpleCache
 
 import dash_html_components as html
 from dash.dependencies import Input, Output
+from cache import SimpleCache
+
+__all__ = ['DashDataCell']
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +31,7 @@ class SessionSpecificCache(object):
 
 cache = SessionSpecificCache(SimpleCache())
 
-class DataCell(object):
+class DashDataCell(object):
     def __init__(self):
         self.div_id = 'datacell_{:08x}'.format(random.randint(0,0xffffffff))
         self.counter = 0
@@ -49,8 +52,7 @@ class DataCell(object):
         return self.counter
 
     def add_to_layout(self, layout):
-        # logger.debug('Add to layout %s', layout)
-        # logger.debug('layout children %s', layout.keys())
+        logger.debug('Add to layout DashDataCell id %s', self.div_id)
         if self.div_id not in layout.keys():
             layout.children.append(html.Div(id=self.div_id, className='datacell', style={'display': 'none'}))
 
@@ -78,7 +80,6 @@ class DataCell(object):
 
     @classmethod
     def set_output(cls, output, result):
-        logger.debug('Set output %s result %s isinstance %s', output, result, isinstance(output, cls))
         if isinstance(output, cls):
             return output.set(result)
         else:

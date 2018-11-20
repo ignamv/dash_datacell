@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 
 import logging
 
-from datacell import DataCell
+from datacell import DashDataCell
 
 logger = logging.getLogger('datacell')
 logger.setLevel(logging.DEBUG)
@@ -19,19 +19,22 @@ app.layout = html.Div([
     html.Div(id='out1'),
 ])
 
-class MyClass(object):
-    pass
+class NotSerializable(object):
+    def __getstate__(self):
+        raise Exception('Not serializable')
 
-cell = DataCell()
+cell = DashDataCell()
 
-@DataCell.mycallback(app, cell, [Input('in1', 'value')])
+@DashDataCell.mycallback(app, cell, [Input('in1', 'value')])
 def output_arbitrary_object(inp):
-    ret = MyClass()
+    """This callback returns an object which cannot be serialized"""
+    ret = NotSerializable()
     ret.somekey = [c.upper() for c in inp]
     return ret#.somekey
 
-@DataCell.mycallback(app, Output('out1', 'children'), [cell])
+@DashDataCell.mycallback(app, Output('out1', 'children'), [cell])
 def input_arbitrary_object(inp):
+    """This callback receives an object which cannot be serialized"""
     return [html.Pre(repr(inp)), html.Pre(repr(inp.somekey))]
 
 app.run_server(debug=True)
