@@ -36,27 +36,33 @@ class DashDataCell(object):
         self.counter = 0
 
     def output(self):
+        """dash.dependencies.Output for passing to app.callback()"""
         return Output(self.div_id, 'children')
 
     def input(self):
+        """dash.dependencies.Input for passing to app.callback()"""
         return Input(self.div_id, 'children')
 
     def get(self):
+        """Return value of the cell"""
         return cache.get(self.div_id)
 
     def set(self, value):
+        """Set value of the cell. Return counter which increments on each modification"""
         if value != self.get():
             self.counter += 1
             cache.set(self.div_id, value)
         return self.counter
 
     def add_to_layout(self, layout):
+        """Insert hidden div into layout if not already present"""
         logger.debug('Add to layout DashDataCell id %s', self.div_id)
         if self.div_id not in layout.keys():
             layout.children.append(html.Div(id=self.div_id, className='datacell', style={'display': 'none'}))
 
     @classmethod
     def wrap_output(cls, output):
+        """If output is a DashDataCell, replace it with a real dash.dependency.Output"""
         if isinstance(output, cls):
             return output.output()
         else:
@@ -64,6 +70,7 @@ class DashDataCell(object):
 
     @classmethod
     def wrap_input(cls, input_):
+        """If input is a DashDataCell, replace it with a real dash.dependency.Input"""
         if isinstance(input_, cls):
             return input_.input()
         else:
@@ -71,6 +78,7 @@ class DashDataCell(object):
 
     @classmethod
     def get_inputs(cls, inputs, args):
+        """Replace args that correspond to DashDataCells with the value of the cell"""
         for input_, arg in zip(inputs, args):
             if isinstance(input_, cls):
                 yield input_.get()
@@ -79,6 +87,7 @@ class DashDataCell(object):
 
     @classmethod
     def set_output(cls, output, result):
+        """If output is a DashDataCell, set the cell value and return the change counter instead"""
         if isinstance(output, cls):
             return output.set(result)
         else:
@@ -86,12 +95,14 @@ class DashDataCell(object):
 
     @classmethod
     def add_hidden_divs(cls, app, *inoutputs):
+        """Insert into layout hidden divs for all arguments that are DashDataCells"""
         for inoutput in inoutputs:
             if isinstance(inoutput, cls):
                 inoutput.add_to_layout(app.layout)
 
     @classmethod
     def callback(cls, app, output, inputs):
+        """Use this like app.callback, except you can use DashDataCells as an Input/Output"""
         real_output = cls.wrap_output(output)
         real_inputs = map(cls.wrap_input, inputs)
         def ret(innerfunc):
