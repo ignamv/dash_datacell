@@ -1,7 +1,6 @@
 import logging
 import random
 from flask import session
-from werkzeug.contrib.cache import SimpleCache
 
 import dash_html_components as html
 from dash.dependencies import Input, Output
