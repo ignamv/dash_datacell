@@ -92,7 +92,7 @@ class DashDataCell(object):
                 inoutput.add_to_layout(app.layout)
 
     @classmethod
-    def mycallback(cls, app, output, inputs):
+    def callback(cls, app, output, inputs):
         real_output = cls.wrap_output(output)
         real_inputs = map(cls.wrap_input, inputs)
         def ret(innerfunc):

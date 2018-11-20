@@ -25,14 +25,14 @@ class NotSerializable(object):
 
 cell = DashDataCell()
 
-@DashDataCell.mycallback(app, cell, [Input('in1', 'value')])
+@DashDataCell.callback(app, cell, [Input('in1', 'value')])
 def output_arbitrary_object(inp):
     """This callback returns an object which cannot be serialized"""
     ret = NotSerializable()
     ret.somekey = [c.upper() for c in inp]
     return ret#.somekey
 
-@DashDataCell.mycallback(app, Output('out1', 'children'), [cell])
+@DashDataCell.callback(app, Output('out1', 'children'), [cell])
 def input_arbitrary_object(inp):
     """This callback receives an object which cannot be serialized"""
     return [html.Pre(repr(inp)), html.Pre(repr(inp.somekey))]
