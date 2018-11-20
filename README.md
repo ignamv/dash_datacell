@@ -7,6 +7,7 @@ Pass data between callbacks without going through the network or fuzzing with hi
 ```python
 from dash_datacell import DashDataCell
 
+# This instance can be used as an Input or Output in callbacks
 cell = DashDataCell()
 
 @DashDataCell.callback(app, cell, [Input('normal_input', 'value')])
@@ -16,7 +17,7 @@ def output_arbitrary_object(normal_input):
 
 @DashDataCell.callback(app, Output('normal_output', 'children'), [cell])
 def input_arbitrary_object(huge_object):
-    """Receive an object"""
+    """Receive an object ready for use"""
     return str(huge_object)
 ```
 
