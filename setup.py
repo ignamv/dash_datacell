@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='dash_datacell',
     version='0.1',
-    py_modules=['dash_datacell'],
+    packages=find_packages(),
     install_requires=['dash'],
     author='Ignacio Martinez',
     author_email='ignamv@gmail.com',
