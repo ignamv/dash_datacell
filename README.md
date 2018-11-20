@@ -1,6 +1,6 @@
 # dash_datacell
 
-Pass data between callbacks without going through the network or fuzzing with hidden divs.
+Pass data between callbacks without going through the network or futzing with hidden divs.
 
 ## Usage
 
