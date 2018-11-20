@@ -19,22 +19,32 @@ app.layout = html.Div([
     html.Div(id='out1'),
 ])
 
-class NotSerializable(object):
+# This class represents an object which you might want to pass between
+# callbacks without using a hidden Div.
+# It might be too large, or not even serializable
+class HugeObject(object):
     def __getstate__(self):
         raise Exception('Not serializable')
 
+# This instance can be used as an Input or Output in a callback
 cell = DashDataCell()
 
 @DashDataCell.callback(app, cell, [Input('in1', 'value')])
 def output_arbitrary_object(inp):
-    """This callback returns an object which cannot be serialized"""
-    ret = NotSerializable()
-    ret.somekey = [c.upper() for c in inp]
-    return ret#.somekey
+    """
+    This callback returns an object which cannot be serialized
+    
+    You couldn't put this in a hidden Div. 
+    But with DashDataCell, the return value stays in the server without having
+    to serialize it or send it through the network.
+    """
+    ret = HugeObject()
+    ret.some_attribute = inp
+    return ret
 
 @DashDataCell.callback(app, Output('out1', 'children'), [cell])
 def input_arbitrary_object(inp):
-    """This callback receives an object which cannot be serialized"""
-    return [html.Pre(repr(inp)), html.Pre(repr(inp.somekey))]
+    """Receive an object just as it was returned by the previous callback"""
+    return [html.Pre(repr(inp)), html.Pre(repr(inp.some_attribute))]
 
 app.run_server(debug=True)
